@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 import serial
 
 app = Flask(__name__)
@@ -19,7 +19,7 @@ def index():
 def led():
     state = request.form.get('state')
     control_led(state)
-    return f'LED turned {state}'
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

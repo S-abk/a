@@ -1,20 +1,15 @@
 #define PROXIMITY_PIN 7
+#define LED_PIN LED_BUILTIN
+#define DEBOUNCE_DELAY 50
+
+bool lastProximityState = LOW;
+bool currentProximityState = LOW;
+unsigned long lastDebounceTime = 0;
 
 void setup() {
   Serial.begin(9600);
   pinMode(PROXIMITY_PIN, INPUT);
-  pinMode(LED_BUILTIN, OUTPUT);
-}
-
-void loop() {
-  int proximityState = digitalRead(PROXIMITY_PIN);
-a#define LED_PIN LED_BUILTIN
-#define PROXIMITY_PIN 7
-
-void setup() {
-  Serial.begin(9600);
   pinMode(LED_PIN, OUTPUT);
-  pinMode(PROXIMITY_PIN, INPUT);
 }
 
 void loop() {
@@ -27,30 +22,23 @@ void loop() {
     }
   }
 
-  int proximityState = digitalRead(PROXIMITY_PIN);
-  Serial.print("Proximity: ");
-  if (proximityState == HIGH) {
-    Serial.println("Detected");
-  } else {
-    Serial.println("Not Detected");
-  }
-  delay(1000); // Read every second
-}
-
-  if (proximityState == HIGH) {
-    Serial.println("Proximity: Detected");
-  } else {
-    Serial.println("Proximity: Not Detected");
+  int reading = digitalRead(PROXIMITY_PIN);
+  if (reading != lastProximityState) {
+    lastDebounceTime = millis();
   }
 
-  if (Serial.available() > 0) {
-    char command = Serial.read();
-    if (command == '1') {
-      digitalWrite(LED_BUILTIN, HIGH);
-    } else if (command == '0') {
-      digitalWrite(LED_BUILTIN, LOW);
+  if ((millis() - lastDebounceTime) > DEBOUNCE_DELAY) {
+    if (reading != currentProximityState) {
+      currentProximityState = reading;
+      Serial.print("Proximity: ");
+      if (currentProximityState == HIGH) {
+        Serial.println("Detected");
+      } else {
+        Serial.println("Not Detected");
+      }
     }
   }
 
-  delay(1000); // Read every second
+  lastProximityState = reading;
+  delay(100); // Read every 100ms
 }

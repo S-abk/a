@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Control LED and Read Sensor Data</title>
+    <title>Real-time Sensor Data</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 <body>
-    <h1>Control LED and Read Sensor Data</h1>
-    <form action="/led" method="POST">
-        <button type="submit" name="state" value="on">Turn On</button>
-        <button type="submit" name="state" value="off">Turn Off</button>
-    </form>
-    <h2>Sensor Data</h2>
-    <p>{{ sensor_data }}</p>
+    <h1>Real-time Proximity Sensor Data</h1>
+    <div id="plot">
+        <img id="plotImage" src="/plot" />
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+            socket.on('updatePlot', function(msg) {
+                $('#plotImage').attr('src', '/plot');
+            });
+            socket.on('init', function(data_points) {
+                $('#plotImage').attr('src', '/plot');
+            });
+        });
+    </script>
 </body>
 </html>

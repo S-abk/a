@@ -1,15 +1,26 @@
+#define TRIG_PIN 9
+#define ECHO_PIN 10
+
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    char command = Serial.read();
-    if (command == '1') {
-      digitalWrite(LED_BUILTIN, HIGH);
-    } else if (command == '0') {
-      digitalWrite(LED_BUILTIN, LOW);
-    }
-  }
+  long duration, distance;
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance = (duration / 2) / 29.1; // Convert to cm
+
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  delay(1000); // Read every second
 }

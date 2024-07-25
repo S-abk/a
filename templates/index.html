@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Control LED</title>
+    <title>Control LED and Read Sensor Data</title>
 </head>
 <body>
-    <h1>Control LED</h1>
+    <h1>Control LED and Read Sensor Data</h1>
     <form action="/led" method="POST">
         <button type="submit" name="state" value="on">Turn On</button>
         <button type="submit" name="state" value="off">Turn Off</button>
     </form>
+    <h2>Sensor Data</h2>
+    <p>{{ sensor_data }}</p>
 </body>
 </html>

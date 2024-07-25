@@ -1,26 +1,19 @@
-#define TRIG_PIN 9
-#define ECHO_PIN 10
+#define PROXIMITY_PIN 7
 
 void setup() {
   Serial.begin(9600);
-  pinMode(TRIG_PIN, OUTPUT);
-  pinMode(ECHO_PIN, INPUT);
+  pinMode(PROXIMITY_PIN, INPUT);
 }
 
 void loop() {
-  long duration, distance;
-  digitalWrite(TRIG_PIN, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TRIG_PIN, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG_PIN, LOW);
+  int proximityState = digitalRead(PROXIMITY_PIN);
 
-  duration = pulseIn(ECHO_PIN, HIGH);
-  distance = (duration / 2) / 29.1; // Convert to cm
-
-  Serial.print("Distance: ");
-  Serial.print(distance);
-  Serial.println(" cm");
+  Serial.print("Proximity: ");
+  if (proximityState == HIGH) {
+    Serial.println("Detected");
+  } else {
+    Serial.println("Not Detected");
+  }
 
   delay(1000); // Read every second
 }

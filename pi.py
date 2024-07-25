@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for
 import serial
+import time
 
 app = Flask(__name__)
 
@@ -11,9 +12,17 @@ def control_led(state):
     elif state == 'off':
         arduino.write(b'0')
 
+def read_sensor_data():
+    time.sleep(1)
+    if arduino.in_waiting > 0:
+        data = arduino.readline().decode('utf-8').rstrip()
+        return data
+    return None
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    sensor_data = read_sensor_data()
+    return render_template('index.html', sensor_data=sensor_data)
 
 @app.route('/led', methods=['POST'])
 def led():

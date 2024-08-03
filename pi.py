@@ -1,8 +1,8 @@
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
 import serial
 import time
 import threading
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -17,6 +17,7 @@ def read_sensor_data():
     while True:
         if arduino.in_waiting > 0:
             data = arduino.readline().decode('utf-8').rstrip()
+            print(f"Received: {data}")  # Debugging output
             if "Proximity:" in data:
                 proximity = 1 if "Detected" in data else 0
                 timestamp = time.time()
@@ -24,7 +25,7 @@ def read_sensor_data():
                 if len(data_points) > 100:  # Limit number of points
                     data_points.pop(0)
                 socketio.emit('updatePlot', {'timestamp': timestamp, 'proximity': proximity})
-        time.sleep(1)
+        time.sleep(0.1)
 
 def generate_plot():
     times, proximities = zip(*data_points) if data_points else ([], [])

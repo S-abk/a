@@ -1,8 +1,8 @@
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit
 import serial
 import time
 import threading
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -24,7 +24,8 @@ def read_sensor_data():
                 data_points.append((timestamp, proximity))
                 if len(data_points) > 100:  # Limit number of points
                     data_points.pop(0)
-                socketio.emit('updatePlot', {'timestamp': timestamp, 'proximity': proximity})
+                # Emit the plot update
+                socketio.emit('updatePlot', {'image': generate_plot()})
         time.sleep(0.1)
 
 def generate_plot():
@@ -51,10 +52,6 @@ def index():
 @socketio.on('connect')
 def handle_connect():
     emit('init', {'image': generate_plot()})
-
-@socketio.on('request_update')
-def handle_request_update():
-    emit('updatePlot', {'image': generate_plot()})
 
 if __name__ == '__main__':
     sensor_thread = threading.Thread(target=read_sensor_data)

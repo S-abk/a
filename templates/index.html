@@ -22,9 +22,6 @@
             socket.on('updatePlot', function(data) {
                 $('#plotImage').attr('src', 'data:image/png;base64,' + data.image);
             });
-            setInterval(function() {
-                socket.emit('request_update');
-            }, 1000); // Request update every second
         });
     </script>
 </body>

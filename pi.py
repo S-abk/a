@@ -13,12 +13,16 @@ def read_sensor_data():
         if arduino.in_waiting > 0:
             data = arduino.readline().decode('utf-8').rstrip()
             print(f"Received: {data}")  # Debugging output
-            if "Proximity:" in data:
-                proximity = 1 if "Detected" in data else 0
-                timestamp = time.time()
-                data_points.append((timestamp, proximity))
-                if len(data_points) > 100:  # Limit number of points
-                    data_points.pop(0)
+            if "Proximity: Detected" in data:
+                proximity = 1
+            elif "Proximity: Not Detected" in data:
+                proximity = 0
+            else:
+                continue  # If the data is not relevant, continue without processing
+            timestamp = time.time()
+            data_points.append((timestamp, proximity))
+            if len(data_points) > 100:  # Limit number of points
+                data_points.pop(0)
         time.sleep(0.1)
 
 @app.route('/')

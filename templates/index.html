@@ -4,21 +4,27 @@
     <title>Real-time Sensor Data</title>
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2.3.0/dist/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        img { width: 100%; max-width: 600px; }
+    </style>
 </head>
 <body>
     <h1>Real-time Proximity Sensor Data</h1>
     <div id="plot">
-        <img id="plotImage" src="/plot" />
+        <img id="plotImage" src="" alt="Real-time plot will appear here" />
     </div>
     <script type="text/javascript">
         $(document).ready(function() {
             var socket = io.connect('http://' + document.domain + ':' + location.port);
-            socket.on('updatePlot', function(msg) {
-                $('#plotImage').attr('src', '/plot');
+            socket.on('init', function(data) {
+                $('#plotImage').attr('src', 'data:image/png;base64,' + data.image);
             });
-            socket.on('init', function(data_points) {
-                $('#plotImage').attr('src', '/plot');
+            socket.on('updatePlot', function(data) {
+                $('#plotImage').attr('src', 'data:image/png;base64,' + data.image);
             });
+            setInterval(function() {
+                socket.emit('request_update');
+            }, 1000); // Request update every second
         });
     </script>
 </body>

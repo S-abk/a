@@ -13,32 +13,30 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    char command = Serial.read();
-    if (command == '1') {
-      digitalWrite(LED_PIN, HIGH);
-    } else if (command == '0') {
-      digitalWrite(LED_PIN, LOW);
-    }
-  }
-
   int reading = digitalRead(PROXIMITY_PIN);
+
+  // Check if the reading has changed
   if (reading != lastProximityState) {
     lastDebounceTime = millis();
   }
 
+  // If the reading is stable for a period longer than the debounce delay, update the state
   if ((millis() - lastDebounceTime) > DEBOUNCE_DELAY) {
     if (reading != currentProximityState) {
       currentProximityState = reading;
+
+      // Invert the logic here: HIGH means not detected, LOW means detected
       Serial.print("Proximity: ");
-      if (currentProximityState == HIGH) {
+      if (currentProximityState == LOW) { // Adjusted logic
         Serial.println("Detected");
+        digitalWrite(LED_PIN, HIGH);  // Turn on LED when proximity is detected
       } else {
         Serial.println("Not Detected");
+        digitalWrite(LED_PIN, LOW);   // Turn off LED when no proximity is detected
       }
     }
   }
 
   lastProximityState = reading;
-  delay(100); // Read every 100ms
+  delay(100); // Check every 100ms
 }

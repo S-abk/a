@@ -2,26 +2,67 @@
 <html>
 <head>
     <title>Real-time Sensor Data</title>
-    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2.3.0/dist/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <style>
-        img { width: 100%; max-width: 600px; }
+        canvas { width: 100%; max-width: 600px; }
     </style>
 </head>
 <body>
     <h1>Real-time Proximity Sensor Data</h1>
-    <div id="plot">
-        <img id="plotImage" src="" alt="Real-time plot will appear here" />
-    </div>
+    <canvas id="proximityChart"></canvas>
     <script type="text/javascript">
         $(document).ready(function() {
-            var socket = io.connect('http://' + document.domain + ':' + location.port);
-            socket.on('init', function(data) {
-                $('#plotImage').attr('src', 'data:image/png;base64,' + data.image);
+            var ctx = document.getElementById('proximityChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Proximity',
+                        data: [],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            type: 'time',
+                            time: {
+                                unit: 'second',
+                                tooltipFormat: 'HH:mm:ss'
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Time'
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                steps: 1,
+                                max: 1
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Proximity (1=Detected, 0=Not Detected)'
+                            }
+                        }]
+                    }
+                }
             });
-            socket.on('updatePlot', function(data) {
-                $('#plotImage').attr('src', 'data:image/png;base64,' + data.image);
-            });
+
+            function updateChart() {
+                $.getJSON('/data', function(data) {
+                    chart.data.labels = data.map(point => new Date(point[0] * 1000));
+                    chart.data.datasets[0].data = data.map(point => point[1]);
+                    chart.update();
+                });
+            }
+
+            setInterval(updateChart, 1000); // Fetch new data every second
         });
     </script>
 </body>

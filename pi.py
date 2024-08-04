@@ -4,7 +4,7 @@ import time
 import threading
 
 app = Flask(__name__)
-arduino = serial.Serial('/dev/ttyAMA0', 9600)
+arduino = serial.Serial('/dev/ttyAMA0', 9600) // Change the port to the one you are using
 
 data_points = []
 
